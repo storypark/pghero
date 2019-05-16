@@ -16,9 +16,9 @@ Gem::Specification.new do |spec|
   spec.files         = Dir["*.{md,txt}", "{app,config,lib}/**/*"]
   spec.require_path  = "lib"
 
-  spec.required_ruby_version = ">= 2.2"
+  spec.required_ruby_version = ">= 2.4"
 
-  spec.add_dependency "activerecord"
+  spec.add_dependency "activerecord", ">= 5"
 
   spec.add_development_dependency "activerecord-import"
   spec.add_development_dependency "bundler"
@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   if RUBY_PLATFORM == "java"
     spec.add_development_dependency "activerecord-jdbcpostgresql-adapter"
   else
-    spec.add_development_dependency "pg", "< 1.0.0"
+    spec.add_development_dependency "pg"
     spec.add_development_dependency "pg_query"
   end
 end
