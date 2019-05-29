@@ -1,3 +1,7 @@
+## 2.3.0 [unreleased]
+
+- Dropped support for Rails < 4.2
+
 ## 2.2.1 [unreleased]
 
 - Added `config_path` option
