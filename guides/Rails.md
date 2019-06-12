@@ -131,15 +131,15 @@ This requires the following IAM policy:
 }
 ```
 
-## Customization
+## Customization & Multiple Databases
 
-The easiest way to customize PgHero is to generate `config/pghero.yml`.
+To customize PgHero, create `config/pghero.yml` with:
 
 ```sh
 rails generate pghero:config
 ```
 
-This allows you to specify multiple databases and change thresholds.
+This allows you to specify multiple databases and change thresholds. Thresholds can be set globally or per-database.
 
 ## Permissions
 
