@@ -63,6 +63,18 @@
     <script>
       new Chartkick.LineChart("chart-3", <%= json_escape(@chart3_data.to_json).html_safe %>, {colors: ["#5bc0de"], legend: false, library: {tooltips: {intersect: false, mode: "index"}}})
     </script>
+
+    <h1>IO Reads</h1>
+    <div id="chart-4" class="chart" style="margin-bottom: 20px;">Loading...</div>
+    <script>
+      new Chartkick.LineChart("chart-4", <%= json_escape(@chart4_data.to_json).html_safe %>, {colors: ["#5bc0de"], legend: false, library: {tooltips: {intersect: false, mode: "index"}}})
+    </script>
+
+    <h1>IO Writes</h1>
+    <div id="chart-5" class="chart" style="margin-bottom: 20px;">Loading...</div>
+    <script>
+      new Chartkick.LineChart("chart-5", <%= json_escape(@chart5_data.to_json).html_safe %>, {colors: ["#5bc0de"], legend: false, library: {tooltips: {intersect: false, mode: "index"}}})
+    </script>
   <% else %>
     <p>
       Enable

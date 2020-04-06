@@ -114,6 +114,8 @@ module PgHero
                   [
                     db_id,
                     qs[:query],
+                    qs[:shared_blks_read],
+                    qs[:shared_blks_written],
                     qs[:total_minutes] * 60 * 1000,
                     qs[:calls],
                     now,
@@ -122,7 +124,7 @@ module PgHero
                   ]
                 end
 
-              columns = %w[database query total_time calls captured_at query_hash user]
+              columns = %w[database query shared_blks_read shared_blks_written total_time calls captured_at query_hash user]
               insert_stats("pghero_query_stats", columns, values)
             end
           end
@@ -140,6 +142,8 @@ module PgHero
           select_all_stats <<-SQL
             SELECT
               captured_at,
+              shared_blks_read,
+              shared_blks_written,
               total_time / 1000 / 60 AS total_minutes,
               (total_time / calls) AS average_time,
               calls,
@@ -172,6 +176,8 @@ module PgHero
                 LEFT(query, 10000) AS query,
                 #{supports_query_hash? ? "queryid" : "md5(query)"} AS query_hash,
                 rolname AS user,
+                shared_blks_read,
+                shared_blks_written,
                 (total_time / 1000 / 60) AS total_minutes,
                 (total_time / calls) AS average_time,
                 calls
@@ -189,6 +195,8 @@ module PgHero
               query,
               query_hash,
               query_stats.user,
+              shared_blks_read,
+              shared_blks_written,
               total_minutes,
               average_time,
               calls,
@@ -213,6 +221,8 @@ module PgHero
               SELECT
                 #{supports_query_hash? ? "query_hash" : "md5(query)"} AS query_hash,
                 pghero_query_stats.user AS user,
+                SUM(pghero_query_stats.shared_blks_read) AS shared_blks_read,
+                SUM(pghero_query_stats.shared_blks_written) AS shared_blks_written,
                 array_agg(LEFT(query, 10000) ORDER BY REPLACE(LEFT(query, 1000), '?', '!') COLLATE "C" ASC) AS query,
                 (SUM(total_time) / 1000 / 60) AS total_minutes,
                 (SUM(total_time) / SUM(calls)) AS average_time,
@@ -233,6 +243,8 @@ module PgHero
               query_stats.user,
               query[1] AS query,
               query[array_length(query, 1)] AS explainable_query,
+              query_stats.shared_blks_read,
+              query_stats.shared_blks_written,
               total_minutes,
               average_time,
               calls,
@@ -256,6 +268,8 @@ module PgHero
             query: (stats2.find { |s| s[:query] } || {})[:query],
             user: (stats2.find { |s| s[:user] } || {})[:user],
             query_hash: (stats2.find { |s| s[:query_hash] } || {})[:query_hash],
+            shared_blks_read: stats2.sum { |s| s[:shared_blks_read] },
+            shared_blks_written: stats2.sum { |s| s[:shared_blks_written] },
             total_minutes: stats2.sum { |s| s[:total_minutes] },
             calls: stats2.sum { |s| s[:calls] }.to_i,
             all_queries_total_minutes: stats2.sum { |s| s[:all_queries_total_minutes] }
