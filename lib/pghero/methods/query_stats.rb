@@ -142,8 +142,8 @@ module PgHero
           select_all_stats <<-SQL
             SELECT
               captured_at,
-              shared_blks_read,
-              shared_blks_written,
+              (shared_blks_read / calls) AS shared_blks_read,
+              (shared_blks_written / calls) AS shared_blks_written,
               total_time / 1000 / 60 AS total_minutes,
               (total_time / calls) AS average_time,
               calls,
@@ -176,8 +176,8 @@ module PgHero
                 LEFT(query, 10000) AS query,
                 #{supports_query_hash? ? "queryid" : "md5(query)"} AS query_hash,
                 rolname AS user,
-                shared_blks_read,
-                shared_blks_written,
+                (shared_blks_read / calls) AS shared_blks_read,
+                (shared_blks_written / calls) AS shared_blks_written,
                 (total_time / 1000 / 60) AS total_minutes,
                 (total_time / calls) AS average_time,
                 calls
@@ -221,8 +221,8 @@ module PgHero
               SELECT
                 #{supports_query_hash? ? "query_hash" : "md5(query)"} AS query_hash,
                 pghero_query_stats.user AS user,
-                SUM(pghero_query_stats.shared_blks_read) AS shared_blks_read,
-                SUM(pghero_query_stats.shared_blks_written) AS shared_blks_written,
+                (SUM(pghero_query_stats.shared_blks_read) / SUM(calls)) AS shared_blks_read,
+                (SUM(pghero_query_stats.shared_blks_written) / SUM(calls)) AS shared_blks_written,
                 array_agg(LEFT(query, 10000) ORDER BY REPLACE(LEFT(query, 1000), '?', '!') COLLATE "C" ASC) AS query,
                 (SUM(total_time) / 1000 / 60) AS total_minutes,
                 (SUM(total_time) / SUM(calls)) AS average_time,

@@ -120,7 +120,7 @@ module PgHero
 
     def queries
       @title = "Queries"
-      @sort = %w(average_time calls).include?(params[:sort]) ? params[:sort] : nil
+      @sort = %w(average_time calls shared_blks_read shared_blks_written).include?(params[:sort]) ? params[:sort] : nil
       @min_average_time = params[:min_average_time] ? params[:min_average_time].to_i : nil
       @min_calls = params[:min_calls] ? params[:min_calls].to_i : nil
 
